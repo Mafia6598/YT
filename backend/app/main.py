@@ -109,7 +109,7 @@ def integration_status():
     llm = get_llm()
     return {
         "llm": {"provider": llm.name if llm else "offline-template",
-                "model": S.anthropic_model if llm and llm.name == "anthropic" else (S.openai_model if llm else None),
+                "model": llm.model if llm else None,
                 "configured": bool(llm)},
         "tts": {"preferred": S.tts_provider, "chain": tts.provider_chain(),
                 "elevenlabs": bool(S.elevenlabs_api_key and S.elevenlabs_voice_id), "openai": bool(S.openai_api_key),

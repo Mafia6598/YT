@@ -35,6 +35,15 @@ Open http://localhost:8000. (`./run.sh` does the last three steps.)
 
 Development mode for the dashboard: `cd frontend && npx vite` (port 5173, proxies `/api` to 8000).
 
+## GitHub Codespaces (free tier, works from a tablet browser)
+The repo includes `.devcontainer/`. On GitHub: Code → Codespaces → Create codespace on main.
+Setup installs FFmpeg, fonts, Python packages and builds the dashboard (first start takes several minutes),
+then `.devcontainer/start.sh` starts the studio on port 8000 (Ports tab → Dashboard). Keys go in
+GitHub → Settings → Codespaces → Secrets (e.g. `GEMINI_API_KEY`) instead of `.env`.
+Free accounts get a monthly quota of core-hours; a codespace stops when idle (raise the idle timeout in
+GitHub → Settings → Codespaces), which also stops renders in progress. Data stays in the codespace's `data/`
+until the codespace is deleted.
+
 ## Docker
 ```bash
 cp .env.example .env

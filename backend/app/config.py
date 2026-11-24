@@ -17,11 +17,13 @@ class Settings(BaseSettings):
     database_url: str = ""  # default: sqlite file inside data_dir
 
     # LLM (research brainstorming, scripts, SEO, shorts, analysis)
-    llm_provider: str = "auto"  # auto | anthropic | openai | offline
+    llm_provider: str = "auto"  # auto | anthropic | openai | gemini | offline
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-opus-5-5"
     openai_api_key: str = ""
     openai_model: str = "gpt-4.1"
+    gemini_api_key: str = ""  # free tier key from aistudio.google.com (OpenAI-compatible endpoint)
+    gemini_model: str = "gemini-flash-latest"
 
     # Text-to-speech
     tts_provider: str = "edge"  # edge | elevenlabs | openai | espeak

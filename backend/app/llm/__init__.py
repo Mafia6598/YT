@@ -69,15 +69,17 @@ class AnthropicLLM:
 
 class OpenAILLM:
     name = "openai"
+    url = "https://api.openai.com/v1/chat/completions"
+    tokens_field = "max_completion_tokens"
 
     def __init__(self, api_key: str, model: str):
         self.key, self.model = api_key, model
 
     def complete(self, system: str, prompt: str, max_tokens: int = 16000) -> str:
         def _call() -> str:
-            r = httpx.post("https://api.openai.com/v1/chat/completions", timeout=300,
+            r = httpx.post(self.url, timeout=300,
                            headers={"Authorization": f"Bearer {self.key}"},
-                           json={"model": self.model, "max_completion_tokens": max_tokens,
+                           json={"model": self.model, self.tokens_field: max_tokens,
                                  "messages": [{"role": "system", "content": system},
                                               {"role": "user", "content": prompt}]})
             r.raise_for_status()
@@ -88,6 +90,13 @@ class OpenAILLM:
         return retry(_call)
 
 
+class GeminiLLM(OpenAILLM):
+    """Google Gemini through its OpenAI-compatible endpoint (has a free tier with daily limits)."""
+    name = "gemini"
+    url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+    tokens_field = "max_tokens"
+
+
 def get_llm(required: bool = False) -> Optional[LLM]:
     s = get_settings()
     p = s.llm_provider.lower()
@@ -95,9 +104,11 @@ def get_llm(required: bool = False) -> Optional[LLM]:
         return AnthropicLLM(s.anthropic_api_key, s.anthropic_model)
     if p in ("openai", "auto") and s.openai_api_key:
         return OpenAILLM(s.openai_api_key, s.openai_model)
+    if p in ("gemini", "auto") and s.gemini_api_key:
+        return GeminiLLM(s.gemini_api_key, s.gemini_model)
     if required:
         raise ProviderUnavailable(
-            "No LLM configured. Set ANTHROPIC_API_KEY (recommended) or OPENAI_API_KEY in .env")
+            "No LLM configured. Set ANTHROPIC_API_KEY (recommended), OPENAI_API_KEY or GEMINI_API_KEY in .env")
     return None
 
 
