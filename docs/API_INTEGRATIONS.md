@@ -11,6 +11,15 @@ only for testing the pipeline: it is not original enough to publish.
 
 Rough cost: one 10-minute script + fact-check + SEO is roughly 30–60k input and 10–20k output tokens.
 
+### Free alternative: Google Gemini (untested with a live key)
+1. https://aistudio.google.com/apikey → Create API key (free tier, no card).
+2. `.env`: `GEMINI_API_KEY=...` and leave `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` empty (or set `LLM_PROVIDER=gemini`).
+   Model: `GEMINI_MODEL=gemini-flash-latest`.
+3. Check: Settings page shows `LLM: gemini (...)`.
+The free tier has per-minute and per-day request limits; a failed job can be retried from the dashboard.
+Check Google's current terms on how free-tier prompts are used. Expect weaker scripts than Claude, so
+review the script and the fact-check list carefully before approving.
+
 ## 2. Voice
 **Edge TTS (default, free, no key).** Uses Microsoft's online voices. Needs outbound access to
 `speech.platform.bing.com`. Deep male options: `en-US-ChristopherNeural` (default), `en-US-GuyNeural`,

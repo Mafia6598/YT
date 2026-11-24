@@ -256,3 +256,27 @@ def test_last_chapter_at_least_10s():
 def test_subtitle_time_formats():
     from app.video.render import _ass_time, _srt_time
     assert _ass_time(59.996) == "0:01:00.00" and _srt_time(1.001) == "00:00:01,001"
+
+
+def test_gemini_provider_selected_and_called(monkeypatch):
+    import httpx
+    from app import llm as L
+    from app.config import get_settings
+    s = get_settings()
+    monkeypatch.setattr(s, "anthropic_api_key", "")
+    monkeypatch.setattr(s, "openai_api_key", "")
+    monkeypatch.setattr(s, "gemini_api_key", "g-key")
+    monkeypatch.setattr(s, "llm_provider", "auto")
+    seen = {}
+
+    def fake_post(url, **kw):
+        seen["url"], seen["json"], seen["auth"] = url, kw["json"], kw["headers"]["Authorization"]
+        return httpx.Response(200, request=httpx.Request("POST", url),
+                              json={"choices": [{"finish_reason": "stop", "message": {"content": '{"ok": 1}'}}]})
+    monkeypatch.setattr(L.httpx, "post", fake_post)
+    llm = L.get_llm()
+    assert llm.name == "gemini" and llm.model == s.gemini_model
+    assert L.complete_json("sys", "prompt") == {"ok": 1}
+    assert "generativelanguage.googleapis.com" in seen["url"]
+    assert "max_tokens" in seen["json"] and "max_completion_tokens" not in seen["json"]
+    assert seen["auth"] == "Bearer g-key"
