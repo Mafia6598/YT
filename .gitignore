@@ -1,0 +1,9 @@
+.env
+secrets/
+data/
+!data/music/.gitkeep
+backend/tests/_data/
+frontend/node_modules/
+frontend/dist/
+__pycache__/
+*.pyc
